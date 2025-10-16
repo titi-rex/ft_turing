@@ -1,0 +1,74 @@
+#*****************  ENCODING ********************#
+   transitions       | separator|
+1011110101111011        00
+1010101011              00
+101101011011            00
+101110110111101         00
+11010111011101          00
+110110111110111101      00
+1110101110101           00
+1110110111101101        00
+111101111011110111101   00
+1111010101111011        00
+
+
+#*****************  TM STRUCT ********************#
+Qa
+[........<.>.....]
+
+struct {
+    state   actual; //(Qa)
+    char*   tape;   //[.....]
+    int     head;   // <> (idx on tape)
+}
+
+Q = {Q1, .., Qn}
+
+main() {
+
+    act(TM, (s, c, a)) {
+        TM->state(s)
+        TM->write(c)
+        TM->move(a)
+    }
+
+    Qfunc = Q1func
+    while (1)
+    {
+        r = read tape
+        actions = Qfunc.at(r)()
+        act(TM, actions)
+            
+    }
+}
+#*****************  PARSING ********************#
+nΣ = 0
+nQ = 0
+A = {1, 11} = {LEFT, RIGHT}
+
+#*******#   t1
+1011110101111011        00
+
+Qa  read    Qs  write  A 
+1   1111    1   1111   11
+1   4       1   4      2
+
+nQ = 1
+Q1func_1 (TM, r) {
+    if r is 4: return (4,2)
+}
+
+#*******#   t2
+1010101011              00
+
+Qa  read    Qs  write  A 
+1   1       1   1      11
+1   1       1   1      2
+
+nQ = 1
+Q1func_2 (TM, r) {
+    if r is  1: return (1,2)
+}
+
+let Q1func = []
+

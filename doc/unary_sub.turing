@@ -1,0 +1,77 @@
+json -> encode :
+    parse alphabet and remove blank 
+    parse final state and check if they have no transition
+
+
+#*****************  ALPHABET (Σ)  ********************#
+alphabet (Σ): (na = 3)
+    values:     1       -       =
+    idx:        1       2       3
+    idx (b):    1       11     111
+
+blank: (NOT in INPUT)
+    values:     .       
+    idx:        (na + 1)            ->   4
+    idx (b):    (lenght(na) + 1)    ->   1111
+
+
+#*****************  STATES (Q)  ********************#
+init: scr -> premier etat decrit
+states (Q): (nq = 4)
+    values:     scr    er      sb      sk       HALT
+    idx:        1      2       3       4       5
+    idx (b):    1      11      111     1111    11111
+
+final:
+    states without transition
+
+
+#*****************  ACTIONS ********************#
+action:
+    values:     LEFT        RIGHT
+    idx:        1           2
+    idx (b):    1           11
+
+
+#*****************  TRANSITIONS ********************#
+Qa: Q actuel
+r:  char read
+Qs: Q suivant
+w:  char write
+A:  action
+
+transitions:
+    Qa r Qs w A         binary       Qa      r       Qs      w       A 
+
+    q1 4 q1 4 2                      1       1111    1       1111    11
+    q1 1 q1 1 2                      1       1       1       1       11
+    q1 2 q1 2 2                      1       11      1       11      11
+    q1 3 q2 4 1                      1       111     11      1111    1
+
+    q2 1 q3 3 1                      11      1       111     111     1
+    q2 2 q5 4 1                      11      11      11111   1111    1
+
+    q3 1 q3 1 1                      111     1       111     1       1
+    q3 2 q4 2 1                      111     11      1111    11      1
+
+    q4 4 q4 4 1                      1111    1111    1111    1111    1
+    q4 1 q1 4 2                      1111    1       1       1111    11
+
+
+#*****************  ENCODING ********************#
+   transitions       | separator|
+1011110101111011        00
+1010101011              00
+101101011011            00
+101110110111101         00
+11010111011101          00
+110110111110111101      00
+1110101110101           00
+1110110111101101        00
+111101111011110111101   00
+1111010101111011        00
+
+res:
+   
+101111010111101100101010101100101101011011001011101101111010011010111011101001101101111101111010011101011101010011101101111011010011110111101111011110100111101010111101100
+
