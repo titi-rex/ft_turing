@@ -155,7 +155,7 @@ algo tape head Qa Tr Σ blank =
     (write, Qs, action) = QaTr  !! rValueIdx        // get transition to apply (write, state, action)
 
     //FIXME: handle head < 0
-    tape = writeTape tape write head                // write to tape
+    tape = writeTape tape write head Σ blank        // write to tape
     // FIXME: increase tape
     head = moveHead head action                     // move head to LEFT/RIGHT
 
@@ -164,16 +164,16 @@ algo tape head Qa Tr Σ blank =
     else "END"
 
 
-algo tape head Qa Tr Σ 
+algo tape head Qa Tr Σ blank
     | Qa >= lenght(Tr) = "END"
     | otherwise = 
             QaTr = Tr !! Qa
             readValue = tape !! head
             rValueIdx =  elemIndex readValue Σ
             (write, Qs, action) = QaTr  !! rValueIdx
-            tape = writeTape tape write head
+            tape = writeTape tape write head Σ blank
             head = moveHead head action
-            algo tape head Qs Tr Σ
+            algo tape head Qs Tr Σ blank
     
         
 

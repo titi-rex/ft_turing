@@ -1,3 +1,5 @@
+import Prelude
+
 doubleMe x = x + x
 
 doubleUs x y = doubleMe x + doubleMe y
@@ -125,4 +127,181 @@ cylinder r h =
     in  sideArea + 2 * topArea 
 
 
+
+divideByTen :: (Floating a) => a -> a  
+divideByTen = (/10)
+
+isUpperAlphanum :: Char -> Bool  
+isUpperAlphanum = (`elem` ['A'..'Z'])
+
+applyTwice :: (a -> a) -> a -> a  
+applyTwice f x = f (f x)
+
+
+zipWith' :: (a -> b -> c) -> [a] -> [b] -> [c]  
+zipWith' _ [] _ = []  
+zipWith' _ _ [] = []  
+zipWith' f (x:xs) (y:ys) = f x y : zipWith' f xs ys
+
+
+flip' :: (a -> b -> c) -> (b -> a -> c)  
+flip' f y x = f x y 
+
+
+map' :: (a -> b) -> [a] -> [b]  
+map' _ [] = []  
+map' f (x:xs) = f x : map' f xs  
+-- can be done wit hlist comprehension
+-- map' (+3) [1,5,3,1,6] same as [x+3 | x <- [1,5,3,1,6]]
+
+
+filter' :: (a -> Bool) -> [a] -> [a]  
+filter' _ [] = []  
+filter' p (x:xs)  
+    | p x       = x : filter' p xs  
+    | otherwise = filter' p xs  
+-- let notNull x = not (null x) in filter notNull [[1,2,3],[],[3,4,5],[2,2],[],[],[]] 
+
+
+
+quicksort :: (Ord a) => [a] -> [a]  
+quicksort [] = []  
+quicksort (x:xs) = 
+    let smallerSorted = quicksort (filter (<=x) xs)  
+        biggerSorted = quicksort (filter (>x) xs)  
+    in  smallerSorted ++ [x] ++ biggerSorted  
+
+
+largestDivisible :: (Integral a) => a  
+largestDivisible = head (filter p [100000,99999..])  
+    where p x = x `mod` 3829 == 0 
+
+-- sum of odd square < 10000
+-- sum (takeWhile (<10000) (filter odd (map (^2) [1..]))) 
+-- with list comprehension
+-- sum (takeWhile (<10000) [n^2 | n <- [1..], odd (n^2)])
+
+
+-- Collatz sequence
+chain :: (Integral a) => a -> [a]  
+chain 1 = [1]  
+chain n  
+    | even n =  n:chain (n `div` 2)  
+    | odd n  =  n:chain (n*3 + 1) 
+
+-- for all starting numbers between 1 and 100, how many chains have a length greater than 15?
+numLongChains :: Int  
+numLongChains = length (filter isLong (map chain [1..100]))  
+    where isLong xs = length xs > 15
+
+
+--let listOfFuncs = map (*) [0..]
+
+-- lambda 
+-- syntax : \params -> body
+-- better to surround with ()
+
+numLongChains' :: Int
+numLongChains' = length (filter (\xs -> length xs > 15) (map chain [1..100]))
+
+
+-- flip with lambda
+-- flip' :: (a -> b -> c) -> b -> a -> c  
+-- flip' f = \x y -> f y x 
+
+
+-- foldl take f acc and list
+-- f: \acc x -> ...
+-- acc: starting value
+sum' :: (Num a) => [a] -> a  
+sum' xs = foldl (\acc x -> acc + x) 0 xs
+
+-- with how functions are curried in mind
+sum2 :: (Num a) => [a] -> a  
+sum2 = foldl (+) 0 
+
+-- use of fodl to implement elem
+elem' :: (Eq a) => a -> [a] -> Bool  
+elem' y ys = foldl (\acc x -> if x == y then True else acc) False ys
+
+-- right fold (foldr) works the same except the acc is passed in second 
+-- \x acc -> ...
+
+
+
+-- $: function application with lowest precedance
+-- ($) :: (a -> b) -> a -> b  
+-- f $ x = f x 
+
+-- simplify expression
+-- sum (map sqrt [1..130])
+-- sum $ map sqrt [1..130]
+
+-- sqrt (3 + 4 + 9)
+-- sqrt $ 3 + 4 + 9
+
+-- sum (filter (> 10) (map (*2) [2..10]))
+-- sum $ filter (> 10) $ map (*2) [2..10]
+
+
+
+-- composing two functions produces a new function that, 
+-- when called with a parameter x, is the equivalent of calling g with x 
+-- and then calling the f with that result
+
+-- function composition with .
+-- (.) :: (b -> c) -> (a -> b) -> a -> c  
+--    f . g = \x -> f (g x)  
+
+
+-- can be more concise than lambda
+
+-- map (\x -> negate (abs x)) [5,-3,-6,7,-3,2,-19,24]
+-- map (negate . abs) [5,-3,-6,7,-3,2,-19,24]
+
+-- map (\xs -> negate (sum (tail xs))) [[1..5],[3..6],[1..7]]
+-- map (negate . sum . tail) [[1..5],[3..6],[1..7]]
+
+
+-- with function taking multipel parameter 
+
+-- sum (replicate 5 (max 6.7 8.9))
+-- sum . replicate 5 . max 6.7 $ 8.9
+
+-- replicate 100 (product (map (*3) (zipWith max [1,2,3,4,5] [4,5,6,7,8])))
+-- replicate 100 . product . map (*3) . zipWith max [1,2,3,4,5] $ [4,5,6,7,8]
+
+fn x = ceiling (negate (tan (cos (max 50 x))))  
+fn' = ceiling . negate . tan . cos . max 50 
+
+
+-- rewrite example of function
+oddSquareSum :: Integer  
+oddSquareSum = sum (takeWhile (<10000) (filter odd (map (^2) [1..])))  
+
+-- with composition
+oddSquareSum1 :: Integer  
+oddSquareSum1 = sum . takeWhile (<10000) . filter odd . map (^2) $ [1..]  
+
+-- more friendly?
+oddSquareSum2 :: Integer  
+oddSquareSum2 = 
+    let oddSquares = filter odd $ map (^2) [1..]  
+        belowLimit = takeWhile (<10000) oddSquares  
+    in  sum belowLimit  
+
+
+-- fixity : associative and order
+-- data cosntructor recursif 
+
+-- List implementation
+infixr 5 :-:  
+data ListB a = Empty | a :-: (ListB a) deriving (Show, Read, Eq, Ord) 
+
+
+-- ++ operator for List (ListB) (custom name here :'.++')
+infixr 5  .++  
+(.++) :: ListB a -> ListB a -> ListB a  
+Empty .++ ys = ys  
+(x :-: xs) .++ ys = x :-: (xs .++ ys)
 
