@@ -1,78 +1,47 @@
 import Prelude
 import Data.List
 import Debug.Trace
+import Turing.Tape 
+import Turing.State
+import Turing.Machine
 -- import Control.Lens
 
 -- type -> alias for type
 -- data -> new type
 
-type State = Int
-type Symbol = Char
-type Tape = [Symbol]
-
-
-data Action = LEFT | RIGHT deriving (Show)
-
-data Transition = Transition {
-    qA :: State,
-    lR :: Symbol,
-    qF :: State,
-    lW :: Symbol,
-    act :: Action
-} deriving (Show)
-
-
-data Machine = Machine {
-    q :: State,
-    tape :: Tape,
-    idx :: Int
-} deriving (Show)
-
--- Transitions
-transitions = [
-        [   -- TrQ1
-            (1, 1, 2),
-            (1, 2, 2),
-            (2, 4, 1),
-            (1, 4, 2)
-        ],
-        [   -- TrQ2
-            (3, 3, 1),
-            (5, 4, 1)
-        ],
-        [   -- TrQ3
-            (3, 1, 1),
-            (4, 2, 1)
-        ],
-        [   -- TrQ4
-            (1, 4, 2),
-            (-1, 0, 0),
-            (-1, 0, 0),
-            (4, 4, 1)
-        ]
-    ]
-
-
-tQ = [
-        [
-        Transition{qA = 1, lR = '1', qF = 1, lW = '1', act = RIGHT},
-        Transition{qA = 1, lR = '-', qF = 1, lW = '2', act = RIGHT},
-        Transition{qA = 1, lR = '=', qF = 2, lW = '.', act = LEFT},
-        Transition{qA = 1, lR = '.', qF = 1, lW = '.', act = RIGHT}
-        ]
-    ]
-
-
-
-input = "11-11="
-alphabet = "1-=."
 
 debug label value =  trace (label ++ show value)
 
+input = "11-11="
+
+
+
+
+
 main :: IO ()
 main = do
-    let tm = Machine{q = 0, tape = input, idx = 0}
-    print (tm)
+    let m = Machine{q=0, tape=fromString input,transitions=tQ, alphabet = "1-=."}
+
+    let q1t1f = func ((tQ !! 0) !! 0)
+    let q1t2f = func ((tQ !! 0) !! 1)
+    let q1t3f = func ((tQ !! 0) !! 2)
+    let q1t4f = func ((tQ !! 0) !! 3)
+
+
+    let nfunc = choose m
+    print nfunc
+
+    print . q $ m
+    print . tape $ m
+   
+    print . q  . next $ m
+    print . tape . next $ m
+--
+--    print . q  . q1t1f . q1t1f $ m
+--    print . tape  . q1t1f . q1t1f $ m
+--
+--    print . q  . q1t2f . q1t1f . q1t1f $ m
+--    print . tape  . q1t2f . q1t1f . q1t1f $ m
 
 
 
