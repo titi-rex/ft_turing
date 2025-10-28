@@ -5,6 +5,6 @@
 * First version. Released on an unsuspecting world.
 * Print `unary_sub` machine result with input `111-11=`
 
-### Added 
+### Added
 
 * Turing Machine Simulator

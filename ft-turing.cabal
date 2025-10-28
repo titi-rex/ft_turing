@@ -66,4 +66,3 @@ executable ft-turing
 
   -- Base language which the package is written in.
   default-language:    Haskell2010
-

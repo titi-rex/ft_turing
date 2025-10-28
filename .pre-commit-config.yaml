@@ -1,0 +1,23 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+-   repo: local
+    hooks:
+    -   id: ormolu
+        name: ormolu
+        entry: ormolu --mode inplace
+        files: "src/"
+        types: [haskell]
+        language: system
+
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+
+-   repo: https://github.com/markdownlint/markdownlint
+    rev: dfe02491f3fbf626e716a82ff188b9468d3506be
+    hooks:
+    -   id: markdownlint
+

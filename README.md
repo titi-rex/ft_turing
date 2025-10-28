@@ -7,11 +7,27 @@ Coded in Haskell
 ### Dependency
 
 - Cabal
-- Haskell2010 
+- Haskell2010
+- ormolu
 
-### Run 
+### Run
 
 ```shell
     cabal build
     cabal run
+```
+
+### Contributing
+
+Install `ormolu`
+
+```shell
+    cabal install ormolu
+```
+
+Install `pre-commit` hooks
+
+```shell
+    pip install pre-commit
+    pre-commit install
 ```
