@@ -1,7 +1,7 @@
-module Turing.Machine (State, Machine(..), Transition(..), fromTuple, tQ, run) where
+module Machine (State, Machine(..), Transition(..), fromTuple, tQ, run) where
 
 import Data.List
-import Turing.Tape
+import Tape
 
 
 -- Machine state (STATE) represented by int value
@@ -80,8 +80,7 @@ fromTuple (qA, sA, qF, sW, act) = Transition{qA=qA, sA=sA, qF=qF, sW=sW, act=act
 
 -- Create transition function
 transitionMaker :: State -> Symbol -> Action -> Machine -> Machine
-transitionMaker q s act (Machine _ tape tr alp) = (Machine q (move act . writeTape s $ tape) tr alp)
-
+transitionMaker q s act m@(Machine _ tape tr alp) = m {q = q, tape = move act . writeTape s $ tape } 
 
 
 
@@ -106,4 +105,3 @@ tQ = [
             fromTuple (3, '.', 3, '.', LEFT)
         ]
     ]
-
