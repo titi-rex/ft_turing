@@ -1,4 +1,4 @@
-module Turing.Tape (Symbol, Tape(..), Writer, Mover, Taper, Action(..), fromString, move, moveLeft, moveRight, writeTape, readTape) where
+module Turing.Tape (Symbol, Tape(..), Taper, Action(..), fromString, move, writeTape, readTape) where
 
 
 -- Symbol who can be read/write from the tape
@@ -20,8 +20,7 @@ data Tape = Tape {
     tl :: [Symbol]
 } 
 
-type Writer = (Tape -> Tape)
-type Mover = (Tape -> Tape)
+
 type Taper = (Tape -> Tape)
 
 
@@ -38,7 +37,7 @@ fromString (x:xs) = (Tape [] x xs)
 
 
 -- Possible action on the tape
-data Action = LEFT | RIGHT | HALT deriving (Show)
+data Action = LEFT | RIGHT | HALT deriving (Show, Eq)
 
 
 -- Move CS to the left
@@ -70,5 +69,4 @@ writeTape s (Tape hl cs tl) = Tape hl s tl
 -- Read CS
 readTape :: Tape -> Symbol
 readTape (Tape hl cs tl) = cs
-
 
