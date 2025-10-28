@@ -6,14 +6,7 @@ import Parser
 
 import Prelude
 import Data.List
-import Debug.Trace
 
-
--- type -> alias for type
--- data -> new type
-
-
-debug label value =  trace (label ++ show value)
 
 input = "111-11="
 

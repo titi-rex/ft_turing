@@ -305,3 +305,5 @@ infixr 5  .++
 Empty .++ ys = ys  
 (x :-: xs) .++ ys = x :-: (xs .++ ys)
 
+-- type -> alias for type
+-- data -> new type
