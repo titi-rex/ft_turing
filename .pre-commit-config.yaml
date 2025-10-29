@@ -17,7 +17,6 @@ repos:
     -   id: end-of-file-fixer
 
 -   repo: https://github.com/markdownlint/markdownlint
-    rev: dfe02491f3fbf626e716a82ff188b9468d3506be
+    rev: v0.13.0
     hooks:
     -   id: markdownlint
-

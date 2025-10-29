@@ -1,5 +1,5 @@
 json -> encode :
-    parse alphabet and remove blank 
+    parse alphabet and remove blank
     parse final state and check if they have no transition
 
 
@@ -10,7 +10,7 @@ alphabet (Σ): (na = 3)
     idx (b):    1       11     111
 
 blank: (NOT in INPUT)
-    values:     .       
+    values:     .
     idx:        (na + 1)            ->   4
     idx (b):    (lenght(na) + 1)    ->   1111
 
@@ -41,7 +41,7 @@ w:  char write
 A:  action
 
 transitions:
-    Qa r Qs w A         binary       Qa      r       Qs      w       A 
+    Qa r Qs w A         binary       Qa      r       Qs      w       A
 
     q1 l1 q1 l1 2                      1       1       1       1       11
     q1 l2 q1 l2 2                      1       11      1       11      11
@@ -72,6 +72,5 @@ transitions:
 1111010101111011        00
 
 res:
-   
-101111010111101100101010101100101101011011001011101101111010011010111011101001101101111101111010011101011101010011101101111011010011110111101111011110100111101010111101100
 
+101111010111101100101010101100101101011011001011101101111010011010111011101001101101111101111010011101011101010011101101111011010011110111101111011110100111101010111101100

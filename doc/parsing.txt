@@ -19,7 +19,7 @@ struct {
     char*   tape;   //[.....]
     int     head;   // <> (idx on tape)
 }
-schema: 
+schema:
     Qa
     [........<.>.....]
 
@@ -31,7 +31,7 @@ Q = {Q1, .., Qn}
 #*******# variable
 nΣ = 0                      // number of letter (alphabet size)
 nQ = 0                      // number of states
-A = {1, 11} 
+A = {1, 11}
   = {LEFT, RIGHT}           // ACTIONS
 Fq = []                     // Function State (transition function) list (empty at start)
 
@@ -41,7 +41,7 @@ Fq = []                     // Function State (transition function) list (empty 
 1011110101111011        00
 
 // human readable view
-Qa  read    Qs  write  A 
+Qa  read    Qs  write  A
 1   1111    1   1111   11
 1   l4      1   l4     2
 
@@ -136,11 +136,11 @@ increaseTape tape dir default
     | dir == 2 = tape:default
 
 
-moveHead tape action 
+moveHead tape action
     | action == 1 = head - 1
     | action == 2 = head + 1
 
-main = 
+main =
     tape = [input]
     head = 0
     Qa = 0
@@ -166,7 +166,7 @@ algo tape head Qa Tr Σ blank =
 
 algo tape head Qa Tr Σ blank
     | Qa >= lenght(Tr) = "END"
-    | otherwise = 
+    | otherwise =
             QaTr = Tr !! Qa
             readValue = tape !! head
             rValueIdx =  elemIndex readValue Σ
@@ -174,8 +174,3 @@ algo tape head Qa Tr Σ blank
             tape = writeTape tape write head Σ blank
             head = moveHead head action
             algo tape head Qs Tr Σ blank
-    
-        
-
-
-

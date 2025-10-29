@@ -4,6 +4,8 @@ School project aiming to learn Turing Machine and functionnal programmation.
 
 Coded in Haskell
 
+## Install
+
 ### Dependency
 
 - Cabal
