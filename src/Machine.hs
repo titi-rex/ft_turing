@@ -2,14 +2,15 @@ module Machine
   ( State,
     Machine (..),
     Transition (..),
-    fromTuple,
-    tQ,
+    transitionFromTupleEncoded,
+    transitionFromTuple,
     run,
-    choose,
+    encode,
   )
 where
 
 import Data.List
+import Encoding
 import Tape
 
 -- Machine state (STATE) represented by int value
@@ -27,6 +28,17 @@ instance Show Machine where
   show m@(Machine q tape tr) = show (q + 1) ++ " | " ++ show tape ++ "  |  " ++ show transition
     where
       transition = choose m
+
+-- Return the machine unary encoding
+encode :: Machine -> String
+encode (Machine _ _ t) = concat . intersperse "11" . map encode_transition . concat $ t
+
+-- Return the transition unary encoding
+encode_transition :: Transition -> String
+encode_transition (Transition q r f w a _) = en q ++ "1" ++ en r ++ "1" ++ en f ++ "1" ++ en w ++ "1" ++ ea a
+  where
+    en = unaryEncodeNumber
+    ea = unaryEncodeAction
 
 -- Run TM until HALT
 run :: Machine -> [Machine]
@@ -80,32 +92,38 @@ instance Eq Transition where
   x /= y = not (x == y)
 
 -- Create a transition from a 5-tuples (for code readability)
-fromTuple :: (Int, Symbol, Int, Symbol, Action) -> Transition
-fromTuple (qA, sA, qF, sW, act) = Transition {qA = qA, sA = sA, qF = qF, sW = sW, act = act, func = transitionMaker qF sW act}
+transitionFromTuple :: (State, PrettySymbol, State, PrettySymbol, Action) -> [PrettySymbol] -> Transition
+transitionFromTuple (qA, prettySA, qF, prettySW, act) alp = Transition {qA = qA, sA = sA, qF = qF, sW = sW, act = act, func = transitionMaker qF sW act}
+  where
+    sA = prettyToSymbol alp prettySA
+    sW = prettyToSymbol alp prettySW
+
+-- Create a transition directly with internal value
+transitionFromTupleEncoded :: (State, Symbol, State, Symbol, Action) -> Transition
+transitionFromTupleEncoded (qA, sA, qF, sW, act) = Transition {qA = qA, sA = sA, qF = qF, sW = sW, act = act, func = transitionMaker qF sW act}
 
 -- Create transition function
 transitionMaker :: State -> Symbol -> Action -> Machine -> Machine
 transitionMaker q s act m@(Machine _ tape tr) = m {q = (q - 1), tape = move act . writeTape s $ tape}
 
--- hardcoding of unary_sub machine transitions
 -- alp = "1-=."
-tQ =
+tWithRaw =
   [ [ -- tq1
-      fromTuple (1, 1, 1, 1, RIGHT),
-      fromTuple (1, 2, 1, 2, RIGHT),
-      fromTuple (1, 3, 2, 4, LEFT),
-      fromTuple (1, 4, 1, 4, RIGHT)
+      transitionFromTupleEncoded (1, 1, 1, 1, RIGHT),
+      transitionFromTupleEncoded (1, 2, 1, 2, RIGHT),
+      transitionFromTupleEncoded (1, 3, 2, 4, LEFT),
+      transitionFromTupleEncoded (1, 4, 1, 4, RIGHT)
     ],
     [ -- tq2
-      fromTuple (2, 1, 3, 3, LEFT),
-      fromTuple (2, 2, 5, 4, LEFT)
+      transitionFromTupleEncoded (2, 1, 3, 3, LEFT),
+      transitionFromTupleEncoded (2, 2, 5, 4, LEFT)
     ],
     [ -- tq3
-      fromTuple (3, 1, 3, 1, LEFT),
-      fromTuple (3, 2, 4, 2, LEFT)
+      transitionFromTupleEncoded (3, 1, 3, 1, LEFT),
+      transitionFromTupleEncoded (3, 2, 4, 2, LEFT)
     ],
     [ -- tq4
-      fromTuple (4, 1, 1, 4, RIGHT),
-      fromTuple (4, 4, 4, 4, LEFT)
+      transitionFromTupleEncoded (4, 1, 1, 4, RIGHT),
+      transitionFromTupleEncoded (4, 4, 4, 4, LEFT)
     ]
   ]

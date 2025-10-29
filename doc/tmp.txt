@@ -1,3 +1,6 @@
 https://github.com/simonbreiter/universal-turing-machine/blob/master/assets/img/video_example.gif
 
 https://ocw.cs.pub.ro/ppcarte/lib/exe/fetch.php?media=aa:utm.pdf
+
+TODO: display state name instead of value
+add a add transition function  directly on Machine ?
