@@ -1,12 +1,34 @@
-module Tape (Symbol, Tape (..), Action (..), defaultBlank, fromString, move, writeTape, readTape) where
+module Tape
+  ( Symbol,
+    InternalSymbol,
+    Tape (..),
+    Action (..),
+    defaultBlank,
+    fromString,
+    move,
+    writeTape,
+    readTape,
+    symbolToInternal,
+    internalToSymbol,
+  )
+where
+
+import Data.List (elemIndex)
+import Data.Maybe (fromMaybe)
 
 -- Symbol who can be read/write from the tape
 -- For simplicity, we use Char
 type Symbol = Char
 
+-- Type used to store symbol internally
+type InternalSymbol = Int
+
 -- Blank Symbol (BLANK) used to fill Tape
 defaultBlank = '.'
 
+defaultBlankInternal = 3
+
+-- TODO: change tape to use Data.List.setAt nad one list ?
 -- Tape data, composed of :
 --  a head List (HL)
 --  the current Symbol (CS) (head of turing machine)
@@ -35,6 +57,20 @@ writeTape s t@(Tape _ cs _ _) = t {cs = s}
 -- Read CS
 readTape :: Tape -> Symbol
 readTape (Tape _ cs _ _) = cs
+
+-- Encode Symbol to InternalSymbol using Alphabet
+-- example: '1' -> 1, '-' -> 2, '.' -> 3
+symbolToInternal :: Symbol -> [Symbol] -> InternalSymbol
+symbolToInternal sym alp = fromMaybe (2) $ elemIndex sym alp
+
+-- Decode InternalSymbol to Symbol using Alphabet
+-- example: 1 -> '1', 2 -> '-', 3 -> '.'
+internalToSymbol :: InternalSymbol -> [Symbol] -> Symbol
+internalToSymbol intSym alp
+  | exist == True = alp !! intSym
+  | otherwise = defaultBlank
+  where
+    exist = intSym < (length alp)
 
 -- Possible action on the tape
 data Action = LEFT | RIGHT | HALT deriving (Show, Eq)
