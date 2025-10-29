@@ -34,14 +34,14 @@ unary_encode (x : xs) = foldl (\acc x -> if x == y then True else acc) 1
 
 --}
 
-encode_transition :: [Symbol] -> Transition -> String
-encode_transition alp (Transition q r f w a _) = eq q ++ "1" ++ es alp r ++ "1" ++ eq f ++ "1" ++ es alp w ++ "1" ++ ea a
+encode_transition :: Transition -> String
+encode_transition (Transition q r f w a _) = eq q ++ "1" ++ es r ++ "1" ++ eq f ++ "1" ++ es w ++ "1" ++ ea a
   where
     eq = encode_number
-    es = encode_symbol
+    es = encode_number
     ea = encode_action
 
-encode_number :: State -> String
+encode_number :: Int -> String
 encode_number 0 = ""
 encode_number q = "0" ++ encode_number (q - 1)
 
@@ -54,17 +54,21 @@ encode_action :: Action -> String
 encode_action LEFT = "0"
 encode_action RIGHT = "00"
 
+alpha1 = "1-=."
+
 test :: IO ()
 test = do
-  let m = Machine {q = 0, tape = fromString defaultBlank input, transitions = tQ, alphabet = "1-=."}
+  let encoded = toEncodedString alpha1 input
+  let m = Machine {q = 0, tape = fromEncodedString alpha1 encoded, transitions = tQ}
   print . choose $ m
-  print . encode_transition "1-=." . choose $ m
+  print . encode_transition . choose $ m
 
 main :: IO ()
 main = do
-  let m = Machine {q = 0, tape = fromString defaultBlank input, transitions = tQ, alphabet = "1-=."}
+  let encoded = toEncodedString alpha1 input
+  let m = Machine {q = 0, tape = fromEncodedString alpha1 encoded, transitions = tQ}
 
-  print . alphabet $ m
+  print . alphabet . tape $ m
   mapM_ print . concat . transitions $ m
   print "======================"
   mapM_ print . run $ m

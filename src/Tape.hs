@@ -1,15 +1,17 @@
 module Tape
   ( Symbol,
-    InternalSymbol,
+    PrettySymbol,
     Tape (..),
     Action (..),
     defaultBlank,
-    fromString,
+    fromEncodedString,
+    toDecodedString,
+    toEncodedString,
     move,
     writeTape,
     readTape,
-    symbolToInternal,
-    internalToSymbol,
+    symbolToPretty,
+    prettyToSymbol,
   )
 where
 
@@ -18,15 +20,15 @@ import Data.Maybe (fromMaybe)
 
 -- Symbol who can be read/write from the tape
 -- For simplicity, we use Char
-type Symbol = Char
+type Symbol = Int
 
--- Type used to store symbol internally
-type InternalSymbol = Int
+-- Type used to display Symbol for human
+type PrettySymbol = Char
 
 -- Blank Symbol (BLANK) used to fill Tape
-defaultBlank = '.'
+defaultBlank = 3
 
-defaultBlankInternal = 3
+defaultPrettyBlank = '.'
 
 -- TODO: change tape to use Data.List.setAt nad one list ?
 -- Tape data, composed of :
@@ -37,18 +39,44 @@ data Tape = Tape
   { hl :: [Symbol],
     cs :: Symbol,
     tl :: [Symbol],
-    blank :: Symbol
+    alphabet :: [PrettySymbol]
   }
 
 -- For now, show Tape with hardcoded separator
 instance Show Tape where
-  show (Tape hl cs tl _) = ['['] ++ hl ++ ['<', cs, '>'] ++ tl ++ [']']
+  show (Tape hl cs tl alp) = ['['] ++ show prettyHl ++ ['<'] ++ show prettyCs ++ ['>'] ++ show prettyTl ++ [']']
+    where
+      prettyHl = toDecodedString alp hl
+      prettyCs = symbolToPretty alp cs
+      prettyTl = toDecodedString alp tl
 
--- Construt a Tape from a String input
+-- Construt a Tape from a Symbol List
 -- CS is set at first element
-fromString :: Symbol -> String -> Tape
-fromString b [] = (Tape [] b [] b)
-fromString b (x : xs) = (Tape [] x xs b)
+fromEncodedString :: [PrettySymbol] -> [Symbol] -> Tape
+fromEncodedString alp [] = (Tape [] defaultBlank [] alp)
+fromEncodedString alp (x : xs) = (Tape [] x xs alp)
+
+-- Decode a [Symbol] to a String using a PrettySymbol alphabet
+toDecodedString :: [PrettySymbol] -> [Symbol] -> String
+toDecodedString alp l = map (symbolToPretty alp) l
+
+-- Encode a String into its [Symbol] representation using a PrettySymbol alphabet
+toEncodedString :: [PrettySymbol] -> String -> [Symbol]
+toEncodedString alp l = map (prettyToSymbol alp) l
+
+-- Encode Symbol to PrettySymbol using Alphabet
+-- example: '1' -> 1, '-' -> 2, '.' -> 3
+prettyToSymbol :: [PrettySymbol] -> PrettySymbol -> Symbol
+prettyToSymbol alp psym = fromMaybe (2) $ elemIndex psym alp
+
+-- Decode PrettySymbol to Symbol using Alphabet
+-- example: 1 -> '1', 2 -> '-', 3 -> '.'
+symbolToPretty :: [PrettySymbol] -> Symbol -> PrettySymbol
+symbolToPretty alp sym
+  | exist == True = alp !! sym
+  | otherwise = defaultPrettyBlank
+  where
+    exist = sym < (length alp)
 
 -- Write a new Symbol to the tape in place of CS
 writeTape :: Symbol -> Tape -> Tape
@@ -57,20 +85,6 @@ writeTape s t@(Tape _ cs _ _) = t {cs = s}
 -- Read CS
 readTape :: Tape -> Symbol
 readTape (Tape _ cs _ _) = cs
-
--- Encode Symbol to InternalSymbol using Alphabet
--- example: '1' -> 1, '-' -> 2, '.' -> 3
-symbolToInternal :: Symbol -> [Symbol] -> InternalSymbol
-symbolToInternal sym alp = fromMaybe (2) $ elemIndex sym alp
-
--- Decode InternalSymbol to Symbol using Alphabet
--- example: 1 -> '1', 2 -> '-', 3 -> '.'
-internalToSymbol :: InternalSymbol -> [Symbol] -> Symbol
-internalToSymbol intSym alp
-  | exist == True = alp !! intSym
-  | otherwise = defaultBlank
-  where
-    exist = intSym < (length alp)
 
 -- Possible action on the tape
 data Action = LEFT | RIGHT | HALT deriving (Show, Eq)
@@ -84,11 +98,11 @@ move HALT tape = tape
 -- Move CS to the left
 -- Fill Tape with BLANK if needed
 moveLeft :: Tape -> Tape
-moveLeft (Tape [] cs tl blank) = Tape [] blank (cs : tl) blank
-moveLeft (Tape hl cs tl blank) = Tape (init hl) (last hl) (cs : tl) blank
+moveLeft (Tape [] cs tl alp) = Tape [] defaultBlank (cs : tl) alp
+moveLeft (Tape hl cs tl alp) = Tape (init hl) (last hl) (cs : tl) alp
 
 -- Move CS to the right
 -- Fill Tape with BLANK if needed
 moveRight :: Tape -> Tape
-moveRight (Tape hl cs [] blank) = Tape (hl ++ [cs]) blank [] blank
-moveRight t@(Tape hl cs (x : xs) blank) = Tape (hl ++ [cs]) x xs blank
+moveRight (Tape hl cs [] alp) = Tape (hl ++ [cs]) defaultBlank [] alp
+moveRight t@(Tape hl cs (x : xs) alp) = Tape (hl ++ [cs]) x xs alp

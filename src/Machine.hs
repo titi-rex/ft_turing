@@ -19,13 +19,12 @@ type State = Int
 data Machine = Machine
   { q :: State,
     tape :: Tape,
-    transitions :: [[Transition]],
-    alphabet :: [Symbol]
+    transitions :: [[Transition]]
   }
 
 -- Pretty print of TM with the transition to apply
 instance Show Machine where
-  show m@(Machine q tape tr _) = show (q + 1) ++ " | " ++ show tape ++ "  |  " ++ show transition
+  show m@(Machine q tape tr) = show (q + 1) ++ " | " ++ show tape ++ "  |  " ++ show transition
     where
       transition = choose m
 
@@ -39,7 +38,7 @@ run m
 
 -- Get transition to apply from machine
 choose :: Machine -> Transition
-choose (Machine q tape tr _) = if q < (length tr) then getTransition (tr !! q) sym else Empty
+choose (Machine q tape tr) = if q < (length tr) then getTransition (tr !! q) sym else Empty
   where
     sym = readTape tape
 
@@ -86,26 +85,27 @@ fromTuple (qA, sA, qF, sW, act) = Transition {qA = qA, sA = sA, qF = qF, sW = sW
 
 -- Create transition function
 transitionMaker :: State -> Symbol -> Action -> Machine -> Machine
-transitionMaker q s act m@(Machine _ tape tr alp) = m {q = (q - 1), tape = move act . writeTape s $ tape}
+transitionMaker q s act m@(Machine _ tape tr) = m {q = (q - 1), tape = move act . writeTape s $ tape}
 
 -- hardcoding of unary_sub machine transitions
+-- alp = "1-=."
 tQ =
   [ [ -- tq1
-      fromTuple (1, '1', 1, '1', RIGHT),
-      fromTuple (1, '-', 1, '-', RIGHT),
-      fromTuple (1, '=', 2, '.', LEFT),
-      fromTuple (1, '.', 1, '.', RIGHT)
+      fromTuple (1, 1, 1, 1, RIGHT),
+      fromTuple (1, 2, 1, 2, RIGHT),
+      fromTuple (1, 3, 2, 4, LEFT),
+      fromTuple (1, 4, 1, 4, RIGHT)
     ],
     [ -- tq2
-      fromTuple (2, '1', 3, '=', LEFT),
-      fromTuple (2, '-', 5, '.', LEFT)
+      fromTuple (2, 1, 3, 3, LEFT),
+      fromTuple (2, 2, 5, 4, LEFT)
     ],
     [ -- tq3
-      fromTuple (3, '1', 3, '1', LEFT),
-      fromTuple (3, '-', 4, '-', LEFT)
+      fromTuple (3, 1, 3, 1, LEFT),
+      fromTuple (3, 2, 4, 2, LEFT)
     ],
     [ -- tq4
-      fromTuple (4, '1', 1, '.', RIGHT),
-      fromTuple (4, '.', 4, '.', LEFT)
+      fromTuple (4, 1, 1, 4, RIGHT),
+      fromTuple (4, 4, 4, 4, LEFT)
     ]
   ]
