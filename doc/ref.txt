@@ -1,0 +1,29 @@
+
+Haskell:
+    https://hoogle.haskell.org/
+    https://learnyouahaskell.github.io/chapters.html
+
+Render:
+    (see video) https://github.com/simonbreiter/universal-turing-machine/blob/master/assets/img/video_example.gif
+
+Turing Machine Simulator:
+    https://github.com/patrickleboutillier/turing-machine
+    https://ottermad.github.io/2022/01/05/Turing-Machine-Haskell.html
+    https://github.com/JanaElnagar/Turing-Machine
+
+UTM:
+- math
+    https://tilde.ini.uzh.ch/users/tneary/public_html/NUIM-CS-TR-2005-12.pdf
+    https://dna.hamilton.ie/assets/dw/NearyWoodsMCU07.pdf
+    https://justine.lol/sectorlisp2/tneary_Thesis.pdf
+    https://www.sciencedirect.com/science/article/pii/S0304397596000771
+
+- code
+    https://github.com/sidmani/turing/blob/master/examples/universal.tm
+    https://ftlsid.com/Computation/Designing+a+universal+Turing+machine
+
+Encoding:
+    https://ocw.cs.pub.ro/ppcarte/lib/exe/fetch.php?media=aa:utm.pdf
+
+Tool:
+    https://universal-turing-machine.ch/
