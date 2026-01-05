@@ -14,9 +14,22 @@ Coded in Haskell
 
 ### Run
 
+Build the package
+
 ```shell
     cabal build
-    cabal run
+```
+
+Run directly
+
+```shell
+    cabal run exes [--] [FLAGS] [ARGS]
+```
+
+install locally
+
+```shell
+  cabal install --installdir=.
 ```
 
 ### Contributing
