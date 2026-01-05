@@ -4,10 +4,10 @@ import Data.List
 import Data.Maybe
 import Machine
 import Parser
-import Tape
-import Prelude
 import System.Environment (getArgs)
 import System.Exit (exitSuccess)
+import Tape
+import Prelude
 
 input = "111-11="
 
@@ -83,7 +83,7 @@ showHelp = do
   putStrLn "  -h, --help          show this help message and exit"
 
 main :: IO ()
-main = do 
+main = do
   argsList <- getArgs
   if null argsList
     then putStrLn "No arguments provided. Use -h or --help for more information."
@@ -91,9 +91,9 @@ main = do
       let args = head argsList
       if args == "-h" || args == "--help"
         then showHelp >> exitSuccess
-        else if ".json" `isSuffixOf` args
-          then do
-            -- TODO: implement json parsing
-            putStrLn "Fichier json valide : Turing machine implementation is currently being worked on. Please be patient."
-          else
-            putStrLn "Invalid arguments. Use -h or --help for more information."
+        else
+          if ".json" `isSuffixOf` args
+            then do
+              -- TODO: implement json parsing
+              parser args
+            else putStrLn "Invalid arguments. Use -h or --help for more information."
