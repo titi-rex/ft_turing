@@ -6,6 +6,8 @@ import Machine
 import Parser
 import Tape
 import Prelude
+import System.Environment (getArgs)
+import System.Exit (exitSuccess)
 
 input = "111-11="
 
@@ -60,11 +62,38 @@ test = do
   print . choose $ m
   print . encode_transition "1-=." . choose $ m
 
-main :: IO ()
-main = do
-  let m = Machine {q = 0, tape = fromString defaultBlank input, transitions = tQ, alphabet = "1-=."}
+-- main :: IO ()
+-- main = do
+--   let m = Machine {q = 0, tape = fromString defaultBlank input, transitions = tQ, alphabet = "1-=."}
 
-  print . alphabet $ m
-  mapM_ print . concat . transitions $ m
-  print "======================"
-  mapM_ print . run $ m
+--   print . alphabet $ m
+--   mapM_ print . concat . transitions $ m
+--   print "======================"
+--   mapM_ print . run $ m
+
+showHelp :: IO ()
+showHelp = do
+  putStrLn "usage: ft_turing [-h] jsonfile input"
+  putStrLn ""
+  putStrLn "positional arguments:"
+  putStrLn "  jsonfile             json description of the machine"
+  putStrLn "  input                input of the machine"
+  putStrLn ""
+  putStrLn "optional arguments:"
+  putStrLn "  -h, --help          show this help message and exit"
+
+main :: IO ()
+main = do 
+  argsList <- getArgs
+  if null argsList
+    then putStrLn "No arguments provided. Use -h or --help for more information."
+    else do
+      let args = head argsList
+      if args == "-h" || args == "--help"
+        then showHelp >> exitSuccess
+        else if ".json" `isSuffixOf` args
+          then do
+            -- TODO: implement json parsing
+            putStrLn "Fichier json valide : Turing machine implementation is currently being worked on. Please be patient."
+          else
+            putStrLn "Invalid arguments. Use -h or --help for more information."
