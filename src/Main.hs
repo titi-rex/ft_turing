@@ -58,7 +58,7 @@ encode_action RIGHT = "00"
 
 test :: IO ()
 test = do
-  let m = Machine {q = 0, tape = fromString defaultBlank input, transitions = tQ, alphabet = "1-=."}
+  let m = Machine {q = 0, tape = fromString defaultBlank input, transitions = tQ, Machine.alphabet = "1-=."}
   print . choose $ m
   print . encode_transition "1-=." . choose $ m
 

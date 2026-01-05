@@ -61,10 +61,10 @@ type TransitionFunction = Machine -> Machine
 data Transition
   = Transition
       { qA :: State,
-        sA :: Symbol,
-        qF :: State,
-        sW :: Symbol,
-        act :: Action,
+        sA :: Symbol, -- read
+        qF :: State, -- to_state
+        sW :: Symbol, -- write
+        act :: Action, -- action
         func :: TransitionFunction
       }
   | Empty
