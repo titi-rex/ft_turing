@@ -4,6 +4,8 @@ import Data.List
 import Data.Maybe
 import Machine
 import Parser
+import System.Environment (getArgs)
+import System.Exit (exitSuccess)
 import Tape
 import Prelude
 
@@ -34,8 +36,8 @@ unary_encode (x : xs) = foldl (\acc x -> if x == y then True else acc) 1
 
 --}
 
-encode_transition :: [Symbol] -> Transition -> String
-encode_transition alp (Transition q r f w a _) = eq q ++ "1" ++ es alp r ++ "1" ++ eq f ++ "1" ++ es alp w ++ "1" ++ ea a
+encode_transition :: [Symbol] -> Machine.Transition -> String
+encode_transition alp (Machine.Transition q r f w a _) = eq q ++ "1" ++ es alp r ++ "1" ++ eq f ++ "1" ++ es alp w ++ "1" ++ ea a
   where
     eq = encode_number
     es = encode_symbol
@@ -54,17 +56,42 @@ encode_action :: Action -> String
 encode_action LEFT = "0"
 encode_action RIGHT = "00"
 
-test :: IO ()
-test = do
-  let m = Machine {q = 0, tape = fromString defaultBlank input, transitions = tQ, alphabet = "1-=."}
-  print . choose $ m
-  print . encode_transition "1-=." . choose $ m
+-- test :: IO ()
+-- test = do
+--   let m = Machine {q = 0, tape = fromString defaultBlank input, Machine.transitions = tQ, Machine.alphabet = "1-=."}
+--   print . choose $ m
+--   print . encode_transition "1-=." . choose $ m
+
+showHelp :: IO ()
+showHelp = do
+  putStrLn "usage: ft_turing [-h] jsonfile input"
+  putStrLn ""
+  putStrLn "positional arguments:"
+  putStrLn "  jsonfile             json description of the machine"
+  putStrLn "  input                input of the machine"
+  putStrLn ""
+  putStrLn "optional arguments:"
+  putStrLn "  -h, --help          show this help message and exit"
+
+runMachineFromJSON :: FilePath -> String -> IO ()
+runMachineFromJSON jsonFile input = do
+  runMachine <- createMachineFromJSON jsonFile input
+  mapM_ print . concat . Machine.transitions $ runMachine
+  putStrLn "************************************************"
+  mapM_ print . run $ runMachine
 
 main :: IO ()
 main = do
-  let m = Machine {q = 0, tape = fromString defaultBlank input, transitions = tQ, alphabet = "1-=."}
-
-  print . alphabet $ m
-  mapM_ print . concat . transitions $ m
-  print "======================"
-  mapM_ print . run $ m
+  argsList <- getArgs
+  if null argsList
+    then putStrLn "No arguments provided. Use -h or --help for more information."
+    else do
+      let args = head argsList
+      if args == "-h" || args == "--help"
+        then showHelp >> exitSuccess
+        else
+          if ".json" `isSuffixOf` args
+            then do
+              parser args input
+              runMachineFromJSON args "111-11=" -- TODO: get input from args
+            else putStrLn "Invalid arguments. Use -h or --help for more information."
