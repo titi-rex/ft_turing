@@ -25,7 +25,7 @@ showHelp = do
 runMachineFromJSON :: FilePath -> String -> IO ()
 runMachineFromJSON jsonFile input = do
   runMachine <- createMachineFromJSON jsonFile input
-  mapM_ print . concat . Machine.transitions $ runMachine
+  mapM_ (putStrLn . prettyTransition (prettyStates runMachine)) . concat . Machine.transitions $ runMachine
   putStrLn "************************************************"
   mapM_ print . run $ runMachine
 

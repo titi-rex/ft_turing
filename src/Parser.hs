@@ -30,7 +30,6 @@ printMachineJson filePath = do
       printStates machine
       printInitialState machine
       printFinals machine
-      printTransitions machine
     Left err -> putStrLn $ "Invalid JSON format: " ++ err
 
 -- convert JSON action string to Action type
@@ -135,7 +134,8 @@ createMachineFromJSON filePath input = do
           { q = initialStateIndex,
             tape = tapeFromInput,
             Machine.transitions = transitionTable,
-            Machine.alphabet = alphabetSymbols
+            Machine.alphabet = alphabetSymbols,
+            prettyStates = statesList
           }
     Left _ -> error "Failed to parse JSON"
 
