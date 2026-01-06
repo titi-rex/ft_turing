@@ -22,6 +22,9 @@ printMachineJson filePath = do
   decoded <- parseMachineJSON filePath
   case decoded of
     Right machine -> do
+      case checkParsingErrors machine of
+        Left errMsg -> error errMsg
+        Right () -> return ()
       printMachineName machine
       printAlphabet machine
       printStates machine
@@ -113,10 +116,6 @@ createMachineFromJSON filePath input = do
   decoded <- parseMachineJSON filePath
   case decoded of
     Right machineJson -> do
-      case checkParsingErrors machineJson of
-        Left errMsg -> error errMsg
-        Right () -> return ()
-
       -- convert alphabet to the right format with blank at the end
       let blankSymbol = Types.blank machineJson
           alphabetList = Types.alphabet machineJson
