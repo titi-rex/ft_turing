@@ -7,8 +7,8 @@ import qualified Data.Map as Map
 import Types
 
 -- check all error cases in the JSON file
-checkParsingErrors :: MachineJSON -> Either String ()
-checkParsingErrors machineJson = do
+checkParsingErrors :: MachineJSON -> String -> Either String ()
+checkParsingErrors machineJson input = do
   -- check if the blanck symbol is in the alphabet
   let blankSymbol = Types.blank machineJson
       alphabetList = Types.alphabet machineJson
@@ -60,9 +60,6 @@ checkParsingErrors machineJson = do
     then Left $ "Error: 'HALT' cannot be used as a transition state"
     else Right ()
 
-  -- check that blank symbol is not in the input
-  -- TODO
-
   -- check that each action is either LEFT or RIGHT
   let actions = map Types.action allTransitions
       invalidActions = filter (\a -> a /= "LEFT" && a /= "RIGHT") actions
@@ -76,13 +73,16 @@ checkParsingErrors machineJson = do
     then Left $ "Error: alphabet character(s) " ++ show invalidAlphabetChars ++ " are invalid. Each character must be a string of length 1"
     else Right ()
 
-  Right ()
+  -- check that input only contains characters from the alphabet
+  let validChars = concat (Types.alphabet machineJson)
+  if all (`elem` validChars) input
+    then Right ()
+    else Left $ "Error: input contains invalid characters"
 
--- ajout d'une fonction de verification d'erreur dans le parsing:
--- - verif que le blank est dans l'alphabet
--- - verif que les etats dans les transitions existent
--- - verif que les symboles dans les transitions existent dans l'alphabet
--- - verif que HALT n'est pas dans les transition
--- - blank ne doit pas etre dans l'input
--- - verif que l'action est soit left soit right
--- - Each character of the alphabet must be a string of length strictly equal to 1.
+  -- check that blank symbol is not in the input
+  let blankSymbol = Types.blank machineJson
+  if any (\c -> [c] == blankSymbol) input
+    then Left $ "Error: input must not contain the blank symbol '" ++ blankSymbol ++ "'"
+    else Right ()
+
+  Right ()

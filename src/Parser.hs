@@ -13,27 +13,6 @@ import Print
 import Tape
 import Types
 
-parseMachineJSON :: FilePath -> IO (Either String MachineJSON)
-parseMachineJSON filePath = do
-  contents <- readFile filePath
-  return $ eitherDecode (BL.pack contents)
-
-printMachineJson :: FilePath -> IO ()
-printMachineJson filePath = do
-  decoded <- parseMachineJSON filePath
-  case decoded of
-    Right machine -> do
-      case checkParsingErrors machine of
-        Left errMsg -> error errMsg
-        Right () -> return ()
-      printMachineName machine
-      printAlphabet machine
-      printStates machine
-      printInitialState machine
-      printFinals machine
-      printTransitions machine
-    Left err -> putStrLn $ "Invalid JSON format: " ++ err
-
 -- convert JSON action string to Action type
 convertAction :: String -> Action
 convertAction "LEFT" = LEFT
@@ -89,6 +68,23 @@ createMachineFromJSON filePath input = do
           }
     Left _ -> error "Failed to parse JSON"
 
+parseMachineJSON :: FilePath -> IO (Either String MachineJSON)
+parseMachineJSON filePath = do
+  contents <- readFile filePath
+  return $ eitherDecode (BL.pack contents)
+
 parser :: FilePath -> String -> IO ()
 parser filePath input = do
-  printMachineJson filePath
+  decoded <- parseMachineJSON filePath
+  case decoded of
+    Right machine -> do
+      case checkParsingErrors machine input of
+        Left errMsg -> error errMsg
+        Right () -> return ()
+      printMachineName machine
+      printAlphabet machine
+      printStates machine
+      printInitialState machine
+      printFinals machine
+      printTransitions machine
+    Left err -> putStrLn $ "Invalid JSON format: " ++ err

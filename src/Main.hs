@@ -32,15 +32,13 @@ runMachineFromJSON jsonFile input = do
 main :: IO ()
 main = do
   argsList <- getArgs
-  if null argsList
-    then putStrLn "No arguments provided. Use -h or --help for more information."
-    else do
-      let args = head argsList
-      if args == "-h" || args == "--help"
-        then showHelp >> exitSuccess
-        else
-          if ".json" `isSuffixOf` args
-            then do
-              parser args input
-              runMachineFromJSON args "111-11=" -- TODO: get input from args
-            else putStrLn "Invalid arguments. Use -h or --help for more information."
+  case argsList of
+    ["-h"] -> showHelp >> exitSuccess
+    ["--help"] -> showHelp >> exitSuccess
+    [jsonFile, input] ->
+      if ".json" `isSuffixOf` jsonFile
+        then do
+          parser jsonFile input
+          runMachineFromJSON jsonFile input
+        else putStrLn "Invalid JSON file. Use -h or --help for more information."
+    _ -> putStrLn "Invalid number of arguments. Use -h or --help for more information."
