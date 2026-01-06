@@ -23,3 +23,5 @@ cabal.project.local~
 .ghc.environment.*
 .vscode
 ft-turing
+machine-encode
+tmp

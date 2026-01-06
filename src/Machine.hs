@@ -6,10 +6,12 @@ module Machine
     tQ,
     run,
     choose,
+    encode,
   )
 where
 
 import Data.List
+import Encoding
 import Tape
 
 -- Machine state (STATE) represented by int value
@@ -109,3 +111,17 @@ tQ =
       fromTuple (4, '.', 4, '.', LEFT)
     ]
   ]
+
+-- Encoding
+
+-- Return the transition unary encoding
+encode_transition :: [Symbol] -> Transition -> String
+encode_transition alp (Transition q r f w a _) = en q ++ "1" ++ es r ++ "1" ++ en f ++ "1" ++ es w ++ "1" ++ ea a
+  where
+    en = unaryEncodeNumber
+    es = unaryEncodeNumber . (encodeSymbol alp)
+    ea = unaryEncodeAction
+
+-- Return the machine unary encoding
+encode :: Machine -> String
+encode (Machine _ _ t alp) = concat . intersperse "11" . map (encode_transition alp) . concat $ t
