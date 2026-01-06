@@ -3,7 +3,7 @@ module Machine
     Machine (..),
     Transition (..),
     fromTuple,
-    tQ,
+    -- tQ,
     run,
     choose,
   )
@@ -17,10 +17,10 @@ type State = Int
 
 -- Turing Machine (TM) representation
 data Machine = Machine
-  { q :: State,
-    tape :: Tape,
-    transitions :: [[Transition]],
-    alphabet :: [Symbol]
+  { q :: State, -- initial state
+    tape :: Tape, -- input
+    transitions :: [[Transition]], -- transition table
+    alphabet :: [Symbol] -- alphabet
   }
 
 -- Pretty print of TM with the transition to apply
@@ -89,23 +89,23 @@ transitionMaker :: State -> Symbol -> Action -> Machine -> Machine
 transitionMaker q s act m@(Machine _ tape tr alp) = m {q = (q - 1), tape = move act . writeTape s $ tape}
 
 -- hardcoding of unary_sub machine transitions
-tQ =
-  [ [ -- tq1
-      fromTuple (1, '1', 1, '1', RIGHT),
-      fromTuple (1, '-', 1, '-', RIGHT),
-      fromTuple (1, '=', 2, '.', LEFT),
-      fromTuple (1, '.', 1, '.', RIGHT)
-    ],
-    [ -- tq2
-      fromTuple (2, '1', 3, '=', LEFT),
-      fromTuple (2, '-', 5, '.', LEFT)
-    ],
-    [ -- tq3
-      fromTuple (3, '1', 3, '1', LEFT),
-      fromTuple (3, '-', 4, '-', LEFT)
-    ],
-    [ -- tq4
-      fromTuple (4, '1', 1, '.', RIGHT),
-      fromTuple (4, '.', 4, '.', LEFT)
-    ]
-  ]
+-- tQ =
+--   [ [ -- tq1
+--       fromTuple (1, '1', 1, '1', RIGHT),
+--       fromTuple (1, '-', 1, '-', RIGHT),
+--       fromTuple (1, '=', 2, '.', LEFT),
+--       fromTuple (1, '.', 1, '.', RIGHT)
+--     ],
+--     [ -- tq2
+--       fromTuple (2, '1', 3, '=', LEFT),
+--       fromTuple (2, '-', 5, '.', LEFT)
+--     ],
+--     [ -- tq3
+--       fromTuple (3, '1', 3, '1', LEFT),
+--       fromTuple (3, '-', 4, '-', LEFT)
+--     ],
+--     [ -- tq4
+--       fromTuple (4, '1', 1, '.', RIGHT),
+--       fromTuple (4, '.', 4, '.', LEFT)
+--     ]
+--   ]

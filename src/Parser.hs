@@ -4,58 +4,86 @@ module Parser where
 
 import Data.Aeson
 import qualified Data.ByteString.Lazy.Char8 as BL
-import GHC.Generics
+import Data.List (elemIndex)
+import qualified Data.Map as Map
+import Data.Maybe (fromMaybe)
+import Machine
+import Print
+import Tape
+import Types
 
-data MachineJSON = MachineJSON
-  { name :: String,
-    alphabet :: [String],
-    blank :: String,
-    states :: [String],
-    initial :: String,
-    finals :: [String]
-  }
-  deriving (Show, Generic)
-
-instance FromJSON MachineJSON
-
-printMachineName :: MachineJSON -> IO ()
-printMachineName machine = do
-  putStrLn "************************************************"
-  putStrLn $ "*                  " ++ name machine ++ "                    *"
-  putStrLn "************************************************"
-
-printAlphabet :: MachineJSON -> IO ()
-printAlphabet machine = do
-  putStrLn $ "Alphabet: [" ++ unwords (map (++ ",") (init (alphabet machine))) ++ " " ++ last (alphabet machine) ++ "]"
-
-printStates :: MachineJSON -> IO ()
-printStates machine = do
-  putStrLn $ "States: [" ++ unwords (map (++ ",") (init (states machine))) ++ " " ++ last (states machine) ++ "]"
-
-printInitialState :: MachineJSON -> IO ()
-printInitialState machine = do
-  putStrLn $ "Initial State: " ++ initial machine
-
-printFinals :: MachineJSON -> IO ()
-printFinals machine = do
-  putStrLn $ "Final States: [" ++ unwords (map (++ ",") (init (finals machine))) ++ " " ++ last (finals machine) ++ " " ++ "]"
-
-getMachineJson :: FilePath -> IO ()
-getMachineJson filePath = do
+parseMachineJSON :: FilePath -> IO (Either String MachineJSON)
+parseMachineJSON filePath = do
   contents <- readFile filePath
-  let decoded = decode (BL.pack contents) :: Maybe MachineJSON
+  return $ eitherDecode (BL.pack contents)
+
+printMachineJson :: FilePath -> IO ()
+printMachineJson filePath = do
+  decoded <- parseMachineJSON filePath
   case decoded of
-    Just machine -> do
+    Right machine -> do
       printMachineName machine
       printAlphabet machine
       printStates machine
       printInitialState machine
       printFinals machine
-    Nothing -> putStrLn $ "Failed to parse JSON. Missing field " -- Todo: precise which field is missing
+      printTransitions machine
+    Left err -> putStrLn $ "Invalid JSON format: " ++ err
 
-parser :: FilePath -> IO ()
-parser filePath = do
-  contents <- readFile filePath
-  putStrLn "Fichier json : Turing machine implementation is currently being worked on. Please be patient."
+-- convert JSON action string to Action type
+convertAction :: String -> Action
+convertAction "LEFT" = LEFT
+convertAction "RIGHT" = RIGHT
+convertAction _ = RIGHT -- default
 
-  getMachineJson filePath
+-- convert a single MachineJSON Transition to Machine.Transition
+convertTransition :: [String] -> Int -> Types.Transition -> Machine.Transition
+convertTransition statesList fromStateIdx jsonTrans =
+  let toStateIdx = fromMaybe 0 $ elemIndex (Types.to_state jsonTrans) statesList
+      readSym = head (Types.read jsonTrans)
+      writeSym = head (Types.write jsonTrans)
+      action = convertAction (Types.action jsonTrans)
+   in Machine.fromTuple (fromStateIdx + 1, readSym, toStateIdx + 1, writeSym, action)
+
+-- convert all transitions to Machine format
+convertTransitions :: MachineJSON -> [[Machine.Transition]]
+convertTransitions machineJson =
+  let statesList = Types.states machineJson
+      transMap = Types.transitions machineJson
+   in map
+        ( \(idx, state) ->
+            let jsonTransitions = fromMaybe [] (Map.lookup state transMap)
+             in map (convertTransition statesList idx) jsonTransitions
+        )
+        (zip [0 ..] statesList)
+
+createMachineFromJSON :: FilePath -> String -> IO Machine
+createMachineFromJSON filePath input = do
+  decoded <- parseMachineJSON filePath
+  case decoded of
+    Right machineJson -> do
+      let blankSymbol = Types.blank machineJson
+          -- convert alphabet to the right format with blank at the end
+          alphabetWithoutBlank = filter (/= blankSymbol) (Types.alphabet machineJson)
+          reorderedAlphabet = alphabetWithoutBlank ++ [blankSymbol]
+          alphabetSymbols = concat reorderedAlphabet
+          blankChar = head blankSymbol
+
+          initialState = Types.initial machineJson
+          statesList = Types.states machineJson
+
+          initialStateIndex = fromMaybe 0 $ elemIndex initialState statesList
+          tapeFromInput = fromString blankChar input
+          transitionTable = convertTransitions machineJson
+      return
+        Machine
+          { q = initialStateIndex,
+            tape = tapeFromInput,
+            Machine.transitions = transitionTable,
+            Machine.alphabet = alphabetSymbols
+          }
+    Left _ -> error "Failed to parse JSON"
+
+parser :: FilePath -> String -> IO ()
+parser filePath input = do
+  printMachineJson filePath
