@@ -10,6 +10,7 @@ module Machine
 where
 
 import Data.List
+import Print (padR)
 import Tape
 
 -- Machine state (STATE) represented by int value
@@ -26,13 +27,13 @@ data Machine = Machine
 
 -- Pretty print of TM with the transition to apply
 instance Show Machine where
-  show m@(Machine q tape tr _ prettyStates) = prettyQ ++ " | " ++ show tape ++ "  |  " ++ transition
+  show m@(Machine q tape tr _ prettyStates) = (padR 10 prettyQ) ++ " |  " ++ show tape ++ "  |  " ++ transition
     where
       prettyQ = prettyStates !! q
       transition = (prettyTransition prettyStates) . choose $ m
 
 debugMachine :: Machine -> String
-debugMachine m@(Machine q tape tr _ _) = show (q + 1) ++ " | " ++ show tape ++ "  |  " ++ show transition
+debugMachine m@(Machine q tape tr _ _) = show (q + 1) ++ " |  " ++ show tape ++ "  |  " ++ show transition
   where
     transition = choose m
 
@@ -89,7 +90,7 @@ instance Eq Transition where
 
 prettyTransition :: [String] -> Transition -> String
 prettyTransition states Empty = "HALT"
-prettyTransition states (Transition qA sA qF sW act _) = "(" ++ prettyQA ++ ", " ++ show sA ++ ")" ++ " -> " ++ "(" ++ prettyQF ++ ", " ++ show sW ++ ", " ++ show act ++ ")"
+prettyTransition states (Transition qA sA qF sW act _) = (padR 17 $ "(" ++ prettyQA ++ ", " ++ show sA ++ ")") ++ " ->  " ++ "(" ++ prettyQF ++ ", " ++ show sW ++ ", " ++ show act ++ ")"
   where
     prettyQA = states !! (qA - 1)
     prettyQF = states !! (qF - 1)

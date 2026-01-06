@@ -5,6 +5,7 @@ module Print
     printInitialState,
     printFinals,
     printTransitions,
+    padR,
   )
 where
 
@@ -46,3 +47,8 @@ printTransitions machine = do
 printTransition :: String -> Transition -> IO ()
 printTransition indent transition = do
   putStrLn $ indent ++ "(" ++ Types.read transition ++ ", " ++ Types.to_state transition ++ ") -> (" ++ Types.write transition ++ ", " ++ Types.action transition ++ ")"
+
+padR :: Int -> String -> String
+padR n s
+  | length s < n = s ++ replicate (n - length s) ' '
+  | otherwise = s
