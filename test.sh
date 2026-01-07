@@ -14,11 +14,27 @@ _exit () {
   exit $1
 }
 
-[ -f $BIN ] && echo "Bin already installed" || _build
 
-[ -f $TESTS_DIR ] && echo "Test machine file in $TEST_DIR" || _exit 1 "No tests found!"
+_print_diff () {
+  local expected=$1
+  local got=$1
+}
+
+_test_machine () {
+  local machine=$1.json
+  local input=$(cat $1.input)
+  local output=$(cat $1.output)
+
+  local res=$(./$BIN $machine $input 2>&1)
+  [[ "$res" == "$output" ]] && echo "Ok!" || echo "Nop.."
+}
+
+[ -f $BIN ] && echo "Bin installed" || _build
+
+# [ -f $TESTS_DIR ] && echo "Test machine file in $TEST_DIR" || _exit 1 "No tests found!"
+
+# [ "$1" == "--diff" ]
 
 for file in $TESTS_DIR*.json; do
-  echo $file;
-  echo $file.input;
+  _test_machine "${file%.*}"
 done
