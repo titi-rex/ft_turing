@@ -1,5 +1,42 @@
 #!/usr/bin/env zsh
 
+STYLE_ITALIC="\e[3m"
+STYLE_RESET="\e[0m"
+
+# CLI
+diff=false
+cmd=false
+help=false
+
+get_flags() {
+  while ((#)) do
+    case $1 in
+      -d|--diff)   shift; diff=true;;
+      -h|--help)  shift; help=true;;
+      -s|--show-command)  shift; cmd=true;;
+      -*) _exit 1 "Error: unknown option: $1";;
+      *)  break;;
+    esac
+  done
+  typeset -r diff cmd
+}
+
+_exit () {
+  [ -n $2 ] && echo "$2"
+  exit $1
+}
+
+_usage () {
+  echo "./test.sh [-d | --diff] [-s | --show-command]
+  Put your test file in machines/tests
+    - test_machine1.json
+    - test_machine1.input
+    - test_machine1.output"
+  exit 0
+}
+
+
+# Prerequisite
 BIN=ft-turing
 TESTS_DIR='./machines/tests/'
 
@@ -9,15 +46,14 @@ _build () {
   echo "Done!"
 }
 
-_exit () {
-  [ -n $2 ] && echo "Error: $2"
-  exit $1
-}
 
+# Tests
 
 _print_diff () {
-  local expected=$1
-  local got=$1
+  [[ $diff == "false" ]] && echo " -> Nop..." && return
+
+  echo "Error"
+  diff --color=always <(echo "$1") <(echo "$2")
 }
 
 _test_machine () {
@@ -25,15 +61,23 @@ _test_machine () {
   local input=$(cat $1.input)
   local output=$(cat $1.output)
 
+  echo -ne "Test $STYLE_ITALIC${1##*/}$STYLE_RESET: "
+
   local res=$(./$BIN $machine $input 2>&1)
-  [[ "$res" == "$output" ]] && echo "Ok!" || echo "Nop.."
+
+  [[ $cmd == "true" ]] && echo -n "with $STYLE_ITALIC'./$BIN $machine $input 2>&1'$STYLE_RESET "
+  [[ "$res" == "$output" ]] && echo " -> Ok!" || _print_diff $output $res
 }
 
-[ -f $BIN ] && echo "Bin installed" || _build
 
-# [ -f $TESTS_DIR ] && echo "Test machine file in $TEST_DIR" || _exit 1 "No tests found!"
+# Main
 
-# [ "$1" == "--diff" ]
+[ -f $BIN ] || _build
+[ -d $TESTS_DIR ] && echo "Test machine file in $TEST_DIR" || _exit 1 "Error: test dir not found!"
+
+get_flags $@
+
+[[ $help == "true" ]] && _usage
 
 for file in $TESTS_DIR*.json; do
   _test_machine "${file%.*}"
