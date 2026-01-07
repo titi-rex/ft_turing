@@ -1,0 +1,80 @@
+{
+    "name": "language_02n",
+    "alphabet": [
+        "0",
+        "y",
+        "n",
+        "."
+    ],
+    "blank": ".",
+    "states": [
+        "odd",
+        "even",
+        "false",
+        "true",
+        "HALT"
+    ],
+    "initial": "odd",
+    "finals": [
+        "HALT"
+    ],
+    "transitions": {
+        "odd": [
+            {
+                "read": "0",
+                "to_state": "even",
+                "write": "0",
+                "action": "RIGHT"
+            },
+            {
+                "read": ".",
+                "to_state": "true",
+                "write": ".",
+                "action": "LEFT"
+            }
+        ],
+        "even": [
+            {
+                "read": "0",
+                "to_state": "odd",
+                "write": "0",
+                "action": "RIGHT"
+            },
+            {
+                "read": ".",
+                "to_state": "false",
+                "write": ".",
+                "action": "LEFT"
+            }
+        ],
+        "false": [
+            {
+                "read": "0",
+                "to_state": "false",
+                "write": "0",
+                "action": "RIGHT"
+            },
+            {
+                "read": ".",
+                "to_state": "HALT",
+                "write": "n",
+                "action": "RIGHT"
+            }
+
+        ],
+        "true": [
+            {
+                "read": "0",
+                "to_state": "true",
+                "write": "0",
+                "action": "RIGHT"
+            },
+            {
+                "read": ".",
+                "to_state": "HALT",
+                "write": "y",
+                "action": "RIGHT"
+            }
+        ]
+    }
+}
