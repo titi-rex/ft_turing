@@ -10,6 +10,7 @@ import Data.Maybe (fromMaybe)
 import Errors
 import Machine
 import Print
+import System.Exit (exitFailure)
 import Tape
 import Types
 
@@ -67,7 +68,9 @@ createMachineFromJSON filePath input = do
             Machine.alphabet = alphabetSymbols,
             prettyStates = statesList
           }
-    Left _ -> error "Failed to parse JSON"
+    Left err -> do
+      putStrLn $ "Invalid JSON format: " ++ err
+      exitFailure
 
 parseMachineJSON :: FilePath -> IO (Either String MachineJSON)
 parseMachineJSON filePath = do
@@ -80,11 +83,15 @@ parser filePath input = do
   case decoded of
     Right machine -> do
       case checkParsingErrors machine input of
-        Left errMsg -> error errMsg
+        Left errMsg -> do
+          putStrLn errMsg
+          exitFailure
         Right () -> return ()
       printMachineName machine
       printAlphabet machine
       printStates machine
       printInitialState machine
       printFinals machine
-    Left err -> putStrLn $ "Invalid JSON format: " ++ err
+    Left err -> do
+      putStrLn $ "Invalid JSON format: " ++ err
+      exitFailure
