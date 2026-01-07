@@ -42,7 +42,7 @@ _usage () {
 
 # Prerequisite
 BIN=ft-turing
-TESTS_DIR='./machines/tests/'
+TESTS_DIR='./machines/tests'
 
 build () {
   echo "Building $BIN"
@@ -93,6 +93,6 @@ get_flags $@
 
 [[ $help == "true" ]] && _usage
 
-for file in $TESTS_DIR*.json; do
+for file in $TESTS_DIR/**/*.json; do
   test_machine "${file%.*}"
 done
