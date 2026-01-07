@@ -32,6 +32,14 @@ install locally
   cabal install --installdir=.
 ```
 
+### Test
+
+run test
+
+```shell
+  ./test.sh [OPTIONS]
+```
+
 ### Contributing
 
 Install `ormolu`
