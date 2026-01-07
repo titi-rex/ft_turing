@@ -7,10 +7,15 @@
         "="
     ],
     "blank": ".",
-    "initial": "scanright",
-    "finals": [
+    "states": [
+        "scanright",
+        "eraseone",
+        "subone",
+        "skip",
         "HALT"
     ],
+    "initial": "scanright",
+    "finals": [],
     "transitions": {
         "scanright": [
             {

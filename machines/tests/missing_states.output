@@ -1,1 +1,1 @@
-"ft-turing: Error: initial state 'toplus' is not in the states list"
+Invalid JSON format: Error in $: parsing Types.MachineJSON(MachineJSON) failed, key "states" not found
