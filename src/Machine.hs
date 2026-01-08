@@ -10,6 +10,7 @@ module Machine
 where
 
 import Data.List
+import Debug
 import Print (padR)
 import Tape
 
@@ -41,13 +42,14 @@ debugMachine m@(Machine q tape tr _ _) = show (q + 1) ++ " |  " ++ show tape ++ 
 run :: Machine -> [Machine]
 run m
   | transition == Empty = [m]
+  | transition == Final = [m]
   | otherwise = m : run (func transition m)
   where
     transition = choose m
 
 -- Get transition to apply from machine
 choose :: Machine -> Transition
-choose (Machine q tape tr _ _) = if q < (length tr) then getTransition (tr !! q) sym else Empty
+choose (Machine q tape tr _ _) = if q < (length tr) then getTransition (tr !! q) sym else Final
   where
     sym = readTape tape
 
@@ -76,20 +78,24 @@ data Transition
         func :: TransitionFunction
       }
   | Empty
+  | Final
 
 -- Pretty print transition
 instance Show Transition where
-  show Empty = "HALT"
+  show Final = "FINAL"
+  show Empty = "BLOCKED"
   show (Transition qA sA qF sW act _) = "(" ++ show qA ++ ", " ++ show sA ++ ")" ++ " -> " ++ "(" ++ show qF ++ ", " ++ show sW ++ ", " ++ show act ++ ")"
 
 -- Transition equivalence, only used to check if Empty or not
 instance Eq Transition where
   Empty == Empty = True
+  Final == Final = True
   _ == _ = False
   x /= y = not (x == y)
 
 prettyTransition :: [String] -> Transition -> String
-prettyTransition states Empty = "HALT"
+prettyTransition states Final = "Final"
+prettyTransition states Empty = "Blocked  -> no transition possible"
 prettyTransition states (Transition qA sA qF sW act _) = (padR 17 $ "(" ++ prettyQA ++ ", " ++ show sA ++ ")") ++ " ->  " ++ "(" ++ prettyQF ++ ", " ++ show sW ++ ", " ++ show act ++ ")"
   where
     prettyQA = states !! (qA - 1)

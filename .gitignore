@@ -22,5 +22,5 @@ cabal.project.local~
 .HTF/
 .ghc.environment.*
 .vscode
-ft-turing
+ft_turing
 tmp
