@@ -40,7 +40,7 @@ _usage () {
 
 
 # Prerequisite
-BIN=ft-turing
+BIN=ft_turing
 TESTS_DIR='tests'
 
 build () {
