@@ -35,13 +35,13 @@ convertTransitions machineJson =
   let statesList = Types.states machineJson
       finalsList = Types.finals machineJson
       transMap = Types.transitions machineJson
-   in map
+   in concatMap
         ( \(idx, state) ->
             if state `elem` finalsList
               then []
               else
                 let jsonTransitions = fromMaybe [] (Map.lookup state transMap)
-                 in map (convertTransition statesList idx) jsonTransitions
+                 in [map (convertTransition statesList idx) jsonTransitions]
         )
         (zip [0 ..] statesList)
 
