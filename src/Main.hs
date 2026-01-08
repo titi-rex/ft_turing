@@ -9,8 +9,6 @@ import System.Exit (exitSuccess)
 import Tape
 import Prelude
 
-input = "111-11="
-
 showHelp :: IO ()
 showHelp = do
   putStrLn "usage: ft_turing [-h] jsonfile input"

@@ -19,10 +19,10 @@ type State = Int
 
 -- Turing Machine (TM) representation
 data Machine = Machine
-  { q :: State, -- initial state
-    tape :: Tape, -- input
-    transitions :: [[Transition]], -- transition table
-    alphabet :: [Symbol], -- alphabet
+  { q :: State,
+    tape :: Tape,
+    transitions :: [[Transition]],
+    alphabet :: [Symbol],
     prettyStates :: [String]
   }
 
@@ -71,10 +71,10 @@ type TransitionFunction = Machine -> Machine
 data Transition
   = Transition
       { qA :: State,
-        sA :: Symbol, -- read
-        qF :: State, -- to_state
-        sW :: Symbol, -- write
-        act :: Action, -- action
+        sA :: Symbol,
+        qF :: State,
+        sW :: Symbol,
+        act :: Action,
         func :: TransitionFunction
       }
   | Empty

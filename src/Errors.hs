@@ -9,7 +9,7 @@ import Types
 -- check all error cases in the JSON file
 checkParsingErrors :: MachineJSON -> String -> Either String ()
 checkParsingErrors machineJson input = do
-  -- check if the blanck symbol is in the alphabet
+  -- check if the blank symbol is in the alphabet
   let blankSymbol = Types.blank machineJson
       alphabetList = Types.alphabet machineJson
   if blankSymbol `notElem` alphabetList
