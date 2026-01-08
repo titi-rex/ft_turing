@@ -26,8 +26,8 @@ get_flags() {
 }
 
 _exit () {
-  [ -n $2 ] && echo "$2"
-  exit $1
+  [ -n "$2" ] && echo "$2"
+  exit "$1"
 }
 
 _usage () {
@@ -63,35 +63,45 @@ print_success () {
 # Tests
 
 print_diff () {
-  [[ $diff == "false" ]] && print_success n && return
-
   print_success n
-  diff --color=always <(echo "$1") <(echo "$2")
+  if [[ $diff == "true" ]]; then
+    diff --color=always <(echo "$1") <(echo "$2")
+  fi
 }
 
 test_machine () {
-  local machine=$1.json
-  local input=$(cat $1.conf | jq -r .input)
-  local output=$(cat $1.conf | jq -r .output)
+  local -r machine="$1".json
+  local -r input=$(cat "$1".conf | jq -r .input)
+  local -r output=$(cat "$1".conf | jq -r .output)
 
   echo -ne "${STYLE_BOLD}Test:$STYLE_RESET $STYLE_ITALIC${1##*/}$STYLE_RESET"
 
-  local res=$(./$BIN $machine $input 2>&1)
+  local -r res=$(./$BIN "$machine" "$input" 2>&1)
 
   [[ $cmd == "true" ]] && echo -n " with $STYLE_ITALIC'./$BIN $machine $input'$STYLE_RESET"
-  [[ "$res" == "$output" ]] && print_success || print_diff $output $res
+
+  if [[ "$res" == "$output" ]]; then
+    print_success
+  else
+    print_diff "$output" "$res"
+  fi
 }
 
 
 # Main
 
 [ -f $BIN ] || build
-[ -d $TESTS_DIR ] && echo "Test files in '$STYLE_BOLD$TESTS_DIR$STYLE_RESET'" || _exit 1 "Error: test dir '$STYLE_BOLD$TESTS_DIR$STYLE_RESET' not found!"
 
-get_flags $@
+if [ -d "$TESTS_DIR" ]; then
+    echo "Test files in '$STYLE_BOLD$TESTS_DIR$STYLE_RESET'"
+  else
+    _exit 1 "Error: test dir '$STYLE_BOLD$TESTS_DIR$STYLE_RESET' not found!"
+fi
+
+get_flags "$@"
 
 [[ $help == "true" ]] && _usage
 
-for file in $TESTS_DIR/**/*.json; do
+for file in "$TESTS_DIR"/**/*.json; do
   test_machine "${file%.*}"
 done
