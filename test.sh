@@ -41,7 +41,7 @@ _usage () {
 
 # Prerequisite
 BIN=ft-turing
-TESTS_DIR='./tests'
+TESTS_DIR='tests'
 
 build () {
   echo "Building $BIN"
@@ -74,11 +74,11 @@ test_machine () {
   local input=$(cat $1.conf | jq -r .input)
   local output=$(cat $1.conf | jq -r .output)
 
-  echo -ne "Test $STYLE_ITALIC${1##*/}$STYLE_RESET"
+  echo -ne "${STYLE_BOLD}Test:$STYLE_RESET $STYLE_ITALIC${1##*/}$STYLE_RESET"
 
   local res=$(./$BIN $machine $input 2>&1)
 
-  [[ $cmd == "true" ]] && echo -n " with $STYLE_ITALIC'./$BIN $machine $input 2>&1'$STYLE_RESET"
+  [[ $cmd == "true" ]] && echo -n " with $STYLE_ITALIC'./$BIN $machine $input'$STYLE_RESET"
   [[ "$res" == "$output" ]] && print_success || print_diff $output $res
 }
 
@@ -86,7 +86,7 @@ test_machine () {
 # Main
 
 [ -f $BIN ] || build
-[ -d $TESTS_DIR ] && echo "Test machine file in $TEST_DIR" || _exit 1 "Error: test dir not found!"
+[ -d $TESTS_DIR ] && echo "Test files in '$STYLE_BOLD$TESTS_DIR$STYLE_RESET'" || _exit 1 "Error: test dir '$STYLE_BOLD$TESTS_DIR$STYLE_RESET' not found!"
 
 get_flags $@
 
