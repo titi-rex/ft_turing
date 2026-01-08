@@ -41,7 +41,7 @@ _usage () {
 
 # Prerequisite
 BIN=ft-turing
-TESTS_DIR='./machines/tests'
+TESTS_DIR='./tests'
 
 build () {
   echo "Building $BIN"

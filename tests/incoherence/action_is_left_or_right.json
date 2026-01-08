@@ -1,0 +1,49 @@
+{
+    "name": "test",
+    "alphabet": [
+      "0",
+      "1",
+      "+",
+      "."
+    ],
+    "blank": ".",
+    "states": [
+        "toplus",
+        "eraseone",
+        "HALT"
+    ],
+    "initial": "toplus",
+    "finals": [
+        "HALT"
+    ],
+    "transitions": {
+        "toplus": [
+            {
+                "read": "1",
+                "to_state": "toplus",
+                "write": "1",
+                "action": "icecream"
+            },
+            {
+                "read": "+",
+                "to_state": "toplus",
+                "write": "1",
+                "action": "TURN"
+            },
+            {
+                "read": ".",
+                "to_state": "eraseone",
+                "write": ".",
+                "action": "RIGHT"
+            }
+        ],
+        "eraseone": [
+            {
+                "read": "1",
+                "to_state": "HALT",
+                "write": ".",
+                "action": "LEFT"
+            }
+        ]
+    }
+}
