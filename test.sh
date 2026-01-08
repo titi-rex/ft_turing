@@ -90,6 +90,13 @@ test_machine () {
 
 # Main
 
+
+echo "*********************************************************"
+echo "*                                                       *"
+echo "*                Running Parsing tests                  *"
+echo "*                                                       *"
+echo "*********************************************************"
+
 [ -f $BIN ] || build
 
 if [ -d "$TESTS_DIR" ]; then
