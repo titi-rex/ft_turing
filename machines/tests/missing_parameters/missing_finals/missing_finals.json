@@ -15,7 +15,6 @@
         "HALT"
     ],
     "initial": "scanright",
-    "finals": [],
     "transitions": {
         "scanright": [
             {

@@ -17,8 +17,5 @@
     "initial": "scanright",
     "finals": [
         "HALT"
-    ],
-    "transitions": {
-
-    }
+    ]
 }

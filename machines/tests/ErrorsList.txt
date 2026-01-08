@@ -8,11 +8,6 @@ empty_alphabet.json
 -- check if "states" field is empty
 empty_states.json
 
--- check if "finals" field is empty
-empty_finals.json
-
--- check if "transitions" field is empty
-empty_transitions.json
 
 2. Missing Parameters
 
@@ -44,10 +39,10 @@ missing_read.json
 missing_to_state.json
 
 -- check if "write" field is Missing
-missing_to_state.json
+missing_write.json
 
 -- check if "action" field is Missing
-missing_to_action.json
+missing_action.json
 
 
 2. Invalid Parameters
