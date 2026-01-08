@@ -34,8 +34,7 @@ _usage () {
   echo "./test.sh [-d | --diff] [-s | --show-command]
   Put your test file in machines/tests
     - test_machine1.json
-    - test_machine1.input
-    - test_machine1.output"
+    - test_machine1.conf"
   exit 0
 }
 
@@ -72,8 +71,8 @@ print_diff () {
 
 test_machine () {
   local machine=$1.json
-  local input=$(cat $1.input)
-  local output=$(cat $1.output)
+  local input=$(cat $1.conf | jq -r .input)
+  local output=$(cat $1.conf | jq -r .output)
 
   echo -ne "Test $STYLE_ITALIC${1##*/}$STYLE_RESET"
 
