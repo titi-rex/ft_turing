@@ -52,13 +52,13 @@ missing_to_action.json
 
 2. Invalid Parameters
 
--- check if the initial state exists
+-- check if the initial state exists in states list
 
--- check if final states exist
+-- check if final states exist in states list
 
--- check if states in transitions exist
+-- check if states in transitions exist in states list
 
--- check if to_state in each transition exists
+-- check if to_state in each transition exists in states list
 
 -- check if symbols in transitions exist in alphabet
 
